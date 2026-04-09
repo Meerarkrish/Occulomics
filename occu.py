@@ -102,12 +102,37 @@ with tab1:
 
 with tab2:
     st.header("🌍 Epidemiology Dashboard")
-    st.write("Aggregated data from the Oculomics Commons network.")
+    st.write("Real-time Global Surveillance of Vascular Health")
+
+    # In a real portal, 'all_data' would come from st.connection("database")
+    # For now, let's simulate a larger, more diverse dataset
+    if 'global_db' not in st.session_state:
+        # Initializing a database with more countries
+        st.session_state.global_db = pd.DataFrame([
+            {'Country': 'Brazil', 'Offset': -1.2},
+            {'Country': 'Kenya', 'Offset': 0.4},
+            {'Country': 'Japan', 'Offset': -2.1},
+            {'Country': 'India', 'Offset': 0.9},
+            {'Country': 'Germany', 'Offset': -0.5},
+            {'Country': 'Canada', 'Offset': -1.1}
+        ])
+
+    # 1. Logic to ADD the current user's result to the "Database"
+    if uploaded_file and 'avr' in locals():
+        new_entry = {'Country': user_country, 'Offset': offset}
+        # Append new data (simulated save)
+        st.session_state.global_db = pd.concat([st.session_state.global_db, pd.DataFrame([new_entry])], ignore_index=True)
+
+    # 2. Aggregation Logic (The Epidemiologist's Work)
+    summary_df = st.session_state.global_db.groupby('Country').agg(
+        Avg_Retinal_Age_Offset=('Offset', 'mean'),
+        Sample_Size=('Offset', 'count')
+    ).reset_index()
+
+    # 3. Display the Global Table
+    st.dataframe(summary_df.sort_values(by='Sample_Size', ascending=False), use_container_width=True)
     
-    # Mock dataframe representing the 'Global Database'
-    stats = pd.DataFrame({
-        'Country': ['Brazil', 'Kenya', 'Japan', 'USA', 'India'],
-        'Avg_Retinal_Age_Offset': [-1.2, 0.4, -2.1, 1.8, 0.9],
-        'Sample_Size': [1200, 850, 3200, 5400, 2100]
-    })
-    st.table(stats)
+    # 4. Global Map (Visualizing the Pandemic of Aging)
+    st.write("### Global Risk Map")
+    st.info("Visualizing mean vascular aging by region.")
+    # In the full version, you would use st.plotly_chart or st.map here
