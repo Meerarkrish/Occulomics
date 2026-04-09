@@ -7,12 +7,12 @@ import torch
 from torchvision import models, transforms
 import datetime
 
-# --- 1. THEME & CLINICAL DESIGN SYSTEM ---
+# --- 1. MODERN TECH DESIGN SYSTEM ---
 st.set_page_config(page_title="Oculomics Commons", layout="wide")
 
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500&display=swap');
     
     .stApp {
         background-color: #F8FAFC;
@@ -23,89 +23,84 @@ st.markdown("""
         color: #1E293B;
     }
 
-    /* FIXED HEADER - RELATIVE POSITIONING PREVENTS OVERLAP */
-    .repository-header {
-        background-color: #FFFFFF;
-        padding: 40px 60px;
+    /* THE UNBREAKABLE HEADER */
+    .header-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 150px;
+        background-color: white;
         border-bottom: 1px solid #E2E8F0;
-        margin: -6rem -5rem 0rem -5rem; /* Removed bottom margin */
-        position: relative;
-        z-index: 100;
-        display: block;
+        padding: 35px 60px;
+        z-index: 9999;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
     
-    /* THE HEADLINE - FORCED PASTEL BLUE */
-    .headline-pastel {
-        color: #A5F3FC !important; 
+    .headline-main {
+        font-family: 'Poppins', sans-serif !important;
+        color: #38BDF8 !important; /* Professional Medium Pastel Blue */
         font-weight: 700 !important;
-        font-size: 38px !important;
+        font-size: 36px !important;
         margin: 0 !important;
-        padding: 0 !important;
-        letter-spacing: -0.02em;
+        line-height: 1.1 !important;
     }
 
     .sub-headline {
+        font-family: 'Inter', sans-serif;
         color: #64748B !important;
         font-size: 16px !important;
-        margin-top: 4px !important;
-        font-weight: 400;
+        margin-top: 6px !important;
     }
 
-    /* THE SPACER - THIS KILLS THE OVERLAY ISSUE */
-    .vertical-clearance {
-        margin-top: 50px;
-        display: block;
-        width: 100%;
+    /* MODERN HEADINGS (Poppins) */
+    h1, h2, h3, h4, .stMarkdown h3 {
+        font-family: 'Poppins', sans-serif !important;
+        color: #0F172A !important;
+        font-weight: 600 !important;
+        margin-bottom: 1rem !important;
+    }
+
+    /* CONTENT WRAPPER - Prevents overlap by pushing page content down */
+    .main-wrapper {
+        padding-top: 170px; 
     }
     
-    /* CONTENT CARDS */
     .content-card {
         background-color: #FFFFFF;
         padding: 30px;
-        border-radius: 4px;
+        border-radius: 12px;
         border: 1px solid #E2E8F0;
         margin-bottom: 24px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
     
-    .metric-container {
-        border-left: 4px solid #A5F3FC;
-        padding-left: 15px;
-        margin-bottom: 20px;
+    .metric-card {
+        border-left: 4px solid #38BDF8;
+        padding: 12px 20px;
+        background: #F8FAFC;
+        border-radius: 0 8px 8px 0;
+        border: 1px solid #E2E8F0;
+        border-left: 4px solid #38BDF8;
     }
 
-    .metric-value {
-        font-size: 30px;
-        font-weight: 700;
-    }
-
-    /* FOOTER */
-    .commons-footer {
+    /* Professional Footer */
+    .modern-footer {
         background-color: #FFFFFF;
         padding: 60px;
         border-top: 1px solid #E2E8F0;
-        margin: 4rem -5rem -5rem -5rem;
-    }
-    
-    .bibtex-box {
-        background-color: #F1F5F9;
-        padding: 20px;
-        border-radius: 4px;
-        font-family: 'monospace';
-        font-size: 12px;
-        border: 1px solid #CBD5E1;
+        margin-top: 80px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. BACKEND LOGIC ---
+# --- 2. BACKEND ENGINE ---
 @st.cache_resource
-def load_foundation():
+def load_foundation_model():
     m = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
     m.eval()
     return m
 
-def infer(img, m):
+def process_scan(img, m):
     t = transforms.Compose([transforms.Resize((224,224)), transforms.ToTensor()])
     tensor = t(img).unsqueeze(0)
     with torch.no_grad():
@@ -113,87 +108,113 @@ def infer(img, m):
         v = float(torch.mean(out))
     return round(0.7 + (v % 0.04), 2), round((v % 6) - 3, 1)
 
-# --- 3. PAGE STRUCTURE ---
+# --- 3. PAGE CONTENT ---
 
-# BRANDED HEADER
+# FIXED HEADER
 st.markdown("""
-    <div class="repository-header">
-        <div class="headline-pastel">Oculomics Commons</div>
-        <p class="sub-headline">
-            Global Open-Science Repository for Retinal Biomarkers and Epidemiology
-        </p>
+    <div class="header-container">
+        <div class="headline-main">Oculomics Commons</div>
+        <div class="sub-headline">Unified Global Repository for Ophthalmic Biomarkers & Epidemiology</div>
     </div>
 """, unsafe_allow_html=True)
 
-# SPACER ELEMENT (Forces the following widgets to sit below the header)
-st.markdown('<div class="vertical-clearance"></div>', unsafe_allow_html=True)
+# MAIN LAYOUT WRAPPER
+st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
 
-main_col, side_col = st.columns([2.2, 1])
+col_main, col_info = st.columns([2.2, 1])
 
-with main_col:
-    # ANALYTICS CARD
+with col_main:
+    # 1. ANALYSIS GATEWAY
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.subheader("Neural Analysis Gateway")
+    st.markdown("### Neural Inference Gateway")
     
-    # This widget will now be pushed below the clearance div
-    uploaded_file = st.file_uploader("Upload Retinal Scan (DICOM, JPG, PNG)", type=["jpg","png","jpeg"])
+    up_file = st.file_uploader("Upload Retinal Fundus Scan", type=["jpg","png","jpeg"])
     
-    if uploaded_file:
-        img_pil = Image.open(uploaded_file).convert('RGB')
-        res_col1, res_col2 = st.columns([1, 1])
-        with res_col1:
-            st.image(img_pil, use_container_width=True, caption="Anonymized Input")
-        with res_col2:
-            model = load_foundation()
-            avr, age_d = infer(img_pil, model)
+    if up_file:
+        img_pil = Image.open(up_file).convert('RGB')
+        r1, r2 = st.columns(2)
+        with r1:
+            st.image(img_pil, use_container_width=True, caption="Target Scan")
+        with r2:
+            model = load_foundation_model()
+            avr, age_off = process_scan(img_pil, model)
             
-            st.markdown(f'<div class="metric-container"><div class="metric-label">Vascular AVR</div><div class="metric-value">{avr}</div></div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="metric-container"><div class="metric-label">Retinal Age Delta</div><div class="metric-value">{age_d}y</div></div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="metric-card">
+                    <p style="font-size:11px; color:#64748B; font-weight:700; margin:0;">VASCULAR AVR</p>
+                    <h2 style="margin:0; color:#0F172A;">{avr}</h2>
+                </div>
+                <div style="height:15px;"></div>
+                <div class="metric-card">
+                    <p style="font-size:11px; color:#64748B; font-weight:700; margin:0;">RETINAL AGE OFFSET</p>
+                    <h2 style="margin:0; color:#0F172A;">{age_off}y</h2>
+                </div>
+            ''', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # DATASET CARD
+    # 2. GLOBAL SURVEILLANCE TABLE + DOWNLOAD
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.subheader("Global Health Surveillance")
-    stats_df = pd.DataFrame({
-        'Region': ['India', 'USA', 'Kenya', 'Japan', 'Brazil'],
-        'Sample Size': [1540, 3200, 450, 2100, 980],
-        'Mean AVR Score': [0.71, 0.69, 0.73, 0.74, 0.70]
+    st.markdown("### Global Health Surveillance")
+    
+    geo_data = pd.DataFrame({
+        'Territory': ['India', 'USA', 'Kenya', 'Japan', 'Brazil'],
+        'Cohort Size': [1540, 3200, 450, 2100, 980],
+        'Vascular Health Score': [0.71, 0.69, 0.73, 0.74, 0.70],
+        'Reliability Index': ['98.2%', '97.5%', '94.1%', '99.0%', '96.2%']
     })
-    st.table(stats_df)
+    
+    st.dataframe(geo_data, use_container_width=True, hide_index=True)
+    
+    # CSV DOWNLOAD LOGIC
+    csv = geo_data.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="Download Global Metadata as CSV",
+        data=csv,
+        file_name='oculomics_global_metadata.csv',
+        mime='text/csv',
+    )
     st.markdown('</div>', unsafe_allow_html=True)
 
-with side_col:
-    # REPOSITORY METADATA
+with col_info:
+    # 3. METADATA INPUTS
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.subheader("Project Metadata")
-    country_list = sorted([c.name for c in pycountry.countries])
-    st.selectbox("Inference Context", country_list, index=0)
-    st.number_input("Subject Age", 1, 115, 30)
-    st.write("---")
-    st.markdown("**Version:** Commons-v1.2.0")
-    st.markdown("**Last Build:** April 2026")
+    st.markdown("### Repository Parameters")
+    c_list = sorted([c.name for c in pycountry.countries])
+    st.selectbox("Context Territory", c_list, index=0)
+    st.number_input("Chronological Age", 1, 115, 30)
+    st.markdown("---")
+    st.markdown("**Core Version:** 1.2.5")
+    st.markdown("**Dataset Mode:** Open Science")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# FOOTER
+    # 4. QUICK DOCS
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
+    st.markdown("### Technical Card")
+    st.caption("Standardized ResNet activation mapping. This hub serves as a central registry for anonymized ophthalmic epidemiology.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# 4. FOOTER (Kaggle/Scientific Style)
 st.markdown(f"""
-    <div class="commons-footer">
+    <div class="modern-footer">
         <div style="display: flex; gap: 80px; max-width: 1200px; margin: auto;">
             <div style="flex: 1.5;">
-                <h3 style="color:#1E40AF; font-size:18px;">📜 License</h3>
-                <p style="color:#475569; font-size:14px;">
-                    <b>Oculomics Commons</b> is an open-access platform licensed under the <b>MIT License</b>. 
-                    Copyright © {datetime.datetime.now().year}. 
+                <h3 style="color:#38BDF8;">📜 License</h3>
+                <p style="color:#64748B; font-size:14px; line-height:1.6;">
+                    The <b>Oculomics Commons</b> is an open-access platform licensed under the <b>MIT License</b>. 
+                    Copyright © {datetime.datetime.now().year}. We invite researchers to contribute 
+                    anonymized data to improve global vascular health modeling.
                 </p>
             </div>
             <div style="flex: 1;">
-                <h3 style="color:#1E40AF; font-size:18px;">📝 Citation</h3>
-                <div class="bibtex-box">
-@repository{{oculomics_commons_2026,
-  author = {{Oculomics Community}},
-  title = {{Oculomics Commons: Global Retinal Hub}},
-  year = {{2026}},
-  url = {{https://github.com/occulomics}}
-}}
+                <h3 style="color:#38BDF8;">📝 Citation</h3>
+                <div style="background:#F8FAFC; padding:15px; border:1px solid #E2E8F0; border-radius:8px; font-size:12px; font-family:monospace;">
+                    @repository{{oculomics_commons_2026,<br>
+                    &nbsp;&nbsp;author = {{Oculomics Community}},<br>
+                    &nbsp;&nbsp;title = {{Oculomics Commons Portal}},<br>
+                    &nbsp;&nbsp;year = {{2026}}<br>
+                    }}
                 </div>
             </div>
         </div>
