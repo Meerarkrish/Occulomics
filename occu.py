@@ -29,17 +29,17 @@ st.markdown("""
         background-color: #FFFFFF;
         padding: 40px 60px;
         border-bottom: 1px solid #E2E8F0;
-        margin: -6rem -5rem 0rem -5rem; /* Removed bottom margin to prevent overlap */
-        display: flex;
-        align-items: center;
-        gap: 20px;
+        /* Positioned to sit at the top without floating over content */
+        margin: -6rem -5rem 0rem -5rem; 
+        display: block;
+        width: 120%; /* Ensures full width coverage */
     }
     
-    /* HEADLINE: OCULOMICS COMMONS IN BLUE */
-    .headline-blue {
-        color: #1E40AF; 
+    /* HEADLINE: OCULOMICS COMMONS IN PASTEL BLUE */
+    .headline-pastel {
+        color: #7DD3FC; /* Pastel Blue */
         font-weight: 700;
-        font-size: 32px;
+        font-size: 36px;
         margin: 0;
         letter-spacing: -0.03em;
     }
@@ -51,9 +51,9 @@ st.markdown("""
         font-weight: 400;
     }
     
-    /* MAIN CONTENT SPACING - FIXES OVERLAP */
-    .main-content-wrapper {
-        margin-top: 40px;
+    /* OVERLAY FIX: Forces content to wait for the header */
+    .header-spacer {
+        height: 40px;
     }
     
     /* CONTENT CARDS */
@@ -68,7 +68,7 @@ st.markdown("""
     
     /* METRICS */
     .metric-container {
-        border-left: 4px solid #1E40AF;
+        border-left: 4px solid #7DD3FC; /* Pastel Blue Accent */
         padding-left: 15px;
         margin-bottom: 20px;
     }
@@ -127,17 +127,15 @@ def calculate_biomarkers(img, model):
 # BRANDED HEADER
 st.markdown("""
     <div class="repository-header">
-        <div>
-            <h1 class="headline-blue">Oculomics Commons</h1>
-            <p class="sub-headline">
-                Global Open-Science Repository for Retinal Biomarkers and Epidemiology
-            </p>
-        </div>
+        <h1 class="headline-pastel">Oculomics Commons</h1>
+        <p class="sub-headline">
+            Global Open-Science Repository for Retinal Biomarkers and Epidemiology
+        </p>
     </div>
 """, unsafe_allow_html=True)
 
-# Wrap everything below the header in a container to prevent overlap
-st.markdown('<div class="main-content-wrapper">', unsafe_allow_html=True)
+# VERTICAL SPACER TO PREVENT UPLOAD OVERLAY
+st.markdown('<div class="header-spacer"></div>', unsafe_allow_html=True)
 
 main_col, side_col = st.columns([2.2, 1])
 
@@ -146,7 +144,7 @@ with main_col:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.subheader("Neural Analysis Gateway")
     
-    # The actual file uploader (Overlay fixed via margin-top in CSS)
+    # File uploader is now properly cleared from the header
     uploaded_file = st.file_uploader("Upload Retinal Scan (DICOM, JPG, PNG)", type=["jpg","png","jpeg"])
     
     if uploaded_file:
@@ -178,27 +176,19 @@ with side_col:
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.subheader("Project Metadata")
     country_list = sorted([c.name for c in pycountry.countries])
-    st.selectbox("Inference Context", country_list, index=country_list.index("India"))
+    st.selectbox("Inference Context", country_list, index=country_list.index("India") if "India" in country_list else 0)
     st.number_input("Subject Age", 1, 115, 30)
     st.write("---")
     st.markdown("**Version:** Commons-v1.2")
     st.markdown("**Status:** Active Repository")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # MODEL CARD
-    st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.subheader("Technical Specs")
-    st.caption("Core: ResNet-18 Foundation Model. This repository uses feature activation mapping to derive micro-vascular indices.")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True) # End main-content-wrapper
-
 # THE CITATION & LICENSE FOOTER
 st.markdown(f"""
     <div class="commons-footer">
         <div style="display: flex; gap: 80px; max-width: 1200px; margin: auto;">
             <div style="flex: 1.5;">
-                <h3 style="color:#1E40AF; font-size:18px;">📜 License</h3>
+                <h3 style="color:#7DD3FC; font-size:18px;">📜 License</h3>
                 <p style="color:#475569; font-size:14px; line-height:1.6;">
                     <b>Oculomics Commons</b> is an open-access platform licensed under the <b>MIT License</b>. 
                     Copyright © {datetime.datetime.now().year}. We invite researchers to contribute 
@@ -206,7 +196,7 @@ st.markdown(f"""
                 </p>
             </div>
             <div style="flex: 1;">
-                <h3 style="color:#1E40AF; font-size:18px;">📝 Citation</h3>
+                <h3 style="color:#7DD3FC; font-size:18px;">📝 Citation</h3>
                 <div class="bibtex-box">
 @repository{{oculomics_commons_2026,
   author = {{Oculomics Community}},
